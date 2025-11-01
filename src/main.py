@@ -17,7 +17,7 @@ from src.apy_calculator import APYCalculator
 from src.tvl_tracker import TVLTracker
 from src.alert_engine import AlertEngine
 from src.protocol_adapters import get_supported_protocols
-from src.x402_middleware import X402Middleware
+from src.x402_middleware_dual import X402Middleware
 
 # Configure logging
 logging.basicConfig(
@@ -54,7 +54,10 @@ app.add_middleware(
     X402Middleware,
     payment_address=payment_address,
     base_url=base_url,
-    facilitator_url="https://facilitator.daydreams.systems",
+    facilitator_urls=[
+        "https://facilitator.daydreams.systems",
+        "https://api.cdp.coinbase.com/platform/v2/x402/facilitator"
+    ],
     free_mode=free_mode,
 )
 
