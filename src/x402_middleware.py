@@ -130,8 +130,9 @@ class X402Middleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # Skip verification for health check and metadata endpoints
-        skip_paths = ["/health", "/.well-known", "/docs", "/redoc", "/openapi.json", "/"]
-        if any(request.url.path.startswith(path) for path in skip_paths):
+        skip_paths = ["/health", "/.well-known", "/docs", "/redoc", "/openapi.json"]
+        # Check for exact root path match separately
+        if request.url.path == "/" or any(request.url.path.startswith(path) for path in skip_paths):
             return await call_next(request)
 
         # Check for payment endpoints (those that require payment)
