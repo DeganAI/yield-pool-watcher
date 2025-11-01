@@ -10,11 +10,12 @@ import aiohttp
 from typing import Optional
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
 
 
-class X402Middleware:
+class X402Middleware(BaseHTTPMiddleware):
     """
     Middleware for x402 payment verification
 
@@ -23,11 +24,13 @@ class X402Middleware:
 
     def __init__(
         self,
+        app,
         payment_address: str,
         base_url: str,
         facilitator_url: str = "https://facilitator.daydreams.systems",
         free_mode: bool = False,
     ):
+        super().__init__(app)
         self.payment_address = payment_address
         self.base_url = base_url
         self.facilitator_url = facilitator_url
@@ -118,7 +121,7 @@ class X402Middleware:
         }
         return JSONResponse(content=metadata, status_code=402)
 
-    async def __call__(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next):
         """Process request and verify payment if required"""
 
         # Skip payment verification in free mode
