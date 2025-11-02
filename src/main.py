@@ -730,6 +730,37 @@ async def entrypoint_watch_get():
                 "payTo": payment_address,
                 "maxTimeoutSeconds": 30,
                 "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                "inputSchema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {
+                        "protocol_ids": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "DeFi protocols to monitor"
+                        },
+                        "pools": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Pool addresses to watch"
+                        },
+                        "chain": {
+                            "type": "number",
+                            "description": "Target blockchain chain ID"
+                        }
+                    },
+                    "required": ["protocol_ids", "pools", "chain"]
+                },
+                "outputSchema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "description": "APY and TVL tracking with sharp change alerts",
+                    "properties": {
+                        "pool_metrics": {"type": "array"},
+                        "deltas": {"type": "array"},
+                        "alerts": {"type": "array"}
+                    }
+                }
             }]
         }
     )
