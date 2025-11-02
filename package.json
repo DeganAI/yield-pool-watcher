@@ -1,0 +1,1 @@
+{"name":"yield-pool-watcher","version":"1.0.0","main":"index.ts","type":"module","scripts":{"start":"tsx index.ts"},"dependencies":{"@lucid-dreams/agent-kit":"^0.2.22","hono":"^4.0.0","@hono/node-server":"^1.0.0"},"devDependencies":{"tsx":"^4.0.0","typescript":"^5.0.0"}}
