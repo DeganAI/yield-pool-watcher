@@ -168,3 +168,4 @@ console.log(`🚀 Yield Pool Watcher running on port ${process.env.PORT || 3000}
 console.log(`📝 Manifest: ${process.env.BASE_URL}/.well-known/agent.json`);
 console.log(`💰 Payment address: ${config.payments?.payTo}`);
 
+
