@@ -1,4 +1,5 @@
 import { createAgentApp } from "@lucid-dreams/agent-kit";
+import { Hono } from "hono";
 import { z } from "zod";
 
 // Input schema
@@ -157,15 +158,60 @@ addEntrypoint({
   },
 });
 
+// Create wrapper app for internal API
+const wrapperApp = new Hono();
+
+// Internal API endpoint (no payment required)
+wrapperApp.post("/api/internal/yield-pool-watcher", async (c) => {
+  try {
+    // Check API key authentication
+    const apiKey = c.req.header("X-Internal-API-Key");
+    const expectedKey = process.env.INTERNAL_API_KEY || "defi-guardian-internal-2024";
+
+    if (apiKey !== expectedKey) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    // Get input from request body
+    const input = await c.req.json();
+
+    // Validate input
+    const validatedInput = YieldInputSchema.parse(input);
+
+    // Call the same logic as x402 endpoint
+    const pools = await fetchDefillama(
+      validatedInput.protocol_ids,
+      validatedInput.chain_ids,
+      validatedInput.apy_threshold,
+      validatedInput.tvl_threshold
+    );
+
+    const alertsCount = pools.filter((p) => p.alert !== null).length;
+
+    return c.json({
+      pools,
+      alerts_count: alertsCount,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("[INTERNAL API] Error:", error);
+    return c.json({ error: error instanceof Error ? error.message : "Internal error" }, 500);
+  }
+});
+
+// Mount the x402 agent app (public, requires payment)
+wrapperApp.route("/", app);
+
 // Export for Bun
 export default {
   port: parseInt(process.env.PORT || "3000"),
-  fetch: app.fetch,
+  fetch: wrapperApp.fetch,
 };
 
 // Bun server start
 console.log(`🚀 Yield Pool Watcher running on port ${process.env.PORT || 3000}`);
 console.log(`📝 Manifest: ${process.env.BASE_URL}/.well-known/agent.json`);
 console.log(`💰 Payment address: ${config.payments?.payTo}`);
+console.log(`🔓 Internal API: /api/internal/yield-pool-watcher (requires API key)`);
 
 
