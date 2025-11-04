@@ -1,9 +1,6 @@
 [build]
 builder = "nixpacks"
 
-[build.nixpacksInstallCmd]
-cmd = "bun install"
-
 [deploy]
 startCommand = "bun run start"
 healthcheckPath = "/health"
