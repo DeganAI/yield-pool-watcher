@@ -166,7 +166,12 @@ wrapperApp.post("/api/internal/yield-pool-watcher", async (c) => {
   try {
     // Check API key authentication
     const apiKey = c.req.header("X-Internal-API-Key");
-    const expectedKey = process.env.INTERNAL_API_KEY || "defi-guardian-internal-2024";
+    const expectedKey = process.env.INTERNAL_API_KEY;
+
+    if (!expectedKey) {
+      console.error("[INTERNAL API] INTERNAL_API_KEY not set");
+      return c.json({ error: "Server configuration error" }, 500);
+    }
 
     if (apiKey !== expectedKey) {
       return c.json({ error: "Unauthorized" }, 401);
