@@ -8,7 +8,7 @@
     "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "@lucid-dreams/agent-kit": "^0.2.24",
+    "@lucid-agents/agent-kit": "^1.1.1",
     "hono": "^4.10.4",
     "zod": "^3.0.0"
   },
